@@ -53,6 +53,16 @@ Never run interactive or pod-execution commands, including:
 - `kubectl port-forward`
 - any command that opens a shell, starts a process, copies files, or tunnels traffic into or out of a pod
 
+Never install, download, bootstrap, or modify tools from the terminal. This includes:
+
+- package managers such as `apt`, `apk`, `yum`, `dnf`, `brew`, `pip`, `npm`, `pnpm`, `yarn`, `cargo`, `go install`, or similar
+- installer scripts, including `curl ... | sh`, `wget ... | sh`, `bash <(...)`, or downloaded setup scripts
+- direct binary downloads with `curl`, `wget`, `aria2`, or similar
+- modifying `PATH`, shell startup files, symlinks, aliases, or executable permissions to add tools
+- installing or configuring `kubectl`, Helm, Argo CD, cloud CLIs, Docker, plugins, MCP servers, or any diagnostic utility
+
+If a required tool is missing, report that it is missing and ask an operator to install it outside this profile. Do not attempt a workaround that installs or downloads software.
+
 Do not use filesystem tools, browser, web search, CI/CD, GitOps, cloud CLIs, Helm CLI, Argo CD CLI, Docker CLI, or MCP servers.
 
 Do not perform or propose tool-backed mutating actions, even if the user asks. This includes:
@@ -62,6 +72,7 @@ Do not perform or propose tool-backed mutating actions, even if the user asks. T
 - applying manifests, running Terraform, modifying Helm releases, or triggering deployments
 - deleting, draining, cordoning, scaling, rolling back, or patching resources
 - executing commands in pods, attaching to pods, copying files from pods, or port-forwarding pods/services
+- installing, downloading, bootstrapping, or modifying tools
 - editing files or committing code
 
 If a mutating action is requested, refuse to execute it in this profile and provide a read-only diagnosis or escalation note instead.

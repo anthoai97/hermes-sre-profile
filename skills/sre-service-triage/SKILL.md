@@ -6,7 +6,11 @@ Use this skill when a developer asks about service count, service health, rollou
 
 Use only terminal commands that run read-only `kubectl` inspection. Do not use filesystem tools, web tools, Helm CLI, Argo CD CLI, Docker CLI, cloud CLI, or MCP servers.
 
-Do not restart, scale, patch, delete, apply, roll back, deploy, edit, or modify anything. Do not inspect Secrets or ConfigMaps. Do not run `kubectl exec`, `kubectl attach`, `kubectl cp`, `kubectl port-forward`, or any command that opens a shell/process in a pod. If the user asks for remediation, secret/config access, or pod execution, provide only read-only non-sensitive findings and an escalation note.
+Do not restart, scale, patch, delete, apply, roll back, deploy, edit, or modify anything. Do not inspect Secrets or ConfigMaps. Do not run `kubectl exec`, `kubectl attach`, `kubectl cp`, `kubectl port-forward`, or any command that opens a shell/process in a pod.
+
+Do not install, download, bootstrap, or configure tools from the terminal. Forbidden examples include package managers, `curl`/`wget` downloads, installer scripts, PATH changes, chmod/symlink setup for new tools, Helm/Argo/cloud CLI installation, Docker tooling, plugins, or MCP servers. If `kubectl` or another required capability is missing, report the missing prerequisite and stop.
+
+If the user asks for remediation, secret/config access, pod execution, or tool installation, provide only read-only non-sensitive findings and an escalation note.
 
 ## Kubernetes Checks
 

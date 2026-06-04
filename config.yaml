@@ -1,7 +1,6 @@
 model:
   provider: openrouter
-  default: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
-  api_mode: chat_completions
+  model: openai/gpt-oss-120b:free
 
 fallback_providers:
   - provider: openai-codex
@@ -20,30 +19,16 @@ toolsets:
 
 platform_toolsets:
   telegram:
+    - skills
     - terminal
+    - vision
+    - messaging
   slack:
     - terminal
 
 agent:
   max_turns: 90
-  disabled_toolsets:
-    - browser
-    - code_execution
-    - cronjob
-    - debugging
-    - delegation
-    - file
-    - image_gen
-    - memory
-    - safe
-    - search
-    - session_search
-    - skills
-    - todo
-    - tts
-    - video
-    - vision
-    - web
+  disabled_toolsets: []
 
 terminal:
   backend: local
@@ -59,6 +44,7 @@ memory:
   user_profile_enabled: false
 
 skills:
+  creation_nudge_interval: 0
   external_dirs: []
   template_vars: true
   inline_shell: false
@@ -72,9 +58,27 @@ approvals:
   timeout: 60
   cron_mode: deny
 
+  destructive_slash_confirm: false
 telegram:
   allowed_chats: ""
 
 slack:
   require_mention: true
   allowed_channels: ""
+
+tool_loop_guardrails:
+  warnings_enabled: true
+  hard_stop_enabled: false
+  warn_after:
+    exact_failure: 2
+    same_tool_failure: 3
+    idempotent_no_progress: 2
+  hard_stop_after:
+    exact_failure: 5
+    same_tool_failure: 8
+    idempotent_no_progress: 5
+
+openrouter:
+  response_cache: true
+  response_cache_ttl: 300
+  min_coding_score: 0.65

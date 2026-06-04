@@ -18,5 +18,4 @@ distribution_owned:
   - SOUL.md
   - config.yaml
   - skills/
-  - cron/
   - distribution.yaml

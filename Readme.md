@@ -24,7 +24,10 @@ I deployed service A, but nothing changed. What should I check?
 ## Contents
 
 ```text
-profiles/sre-agent/        Hermes profile distribution
+SOUL.md                    Agent behavior policy
+config.yaml                Hermes profile config
+distribution.yaml          Hermes distribution manifest
+skills/                    Bundled SRE triage skill
 charts/hermes-agent/       Helm chart for running Hermes in Kubernetes
 ```
 
@@ -33,7 +36,7 @@ charts/hermes-agent/       Helm chart for running Hermes in Kubernetes
 From this repository:
 
 ```sh
-hermes profile install ./profiles/sre-agent --alias sre-agent
+hermes profile install github.com/anthoai97/hermes-sre-profile --alias
 ```
 
 Configure model access in the installed profile `.env`:
@@ -108,4 +111,4 @@ See [charts/hermes-agent/README.md](charts/hermes-agent/README.md) for chart det
 - No file, browser, web, MCP, or code execution toolsets in the Hermes profile.
 - No persistent memory for cross-session operational facts.
 
-See [profiles/sre-agent/SOUL.md](profiles/sre-agent/SOUL.md) for the full agent behavior policy.
+See [SOUL.md](SOUL.md) for the full agent behavior policy.

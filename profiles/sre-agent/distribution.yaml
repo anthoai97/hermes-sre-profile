@@ -1,4 +1,4 @@
-name: sre-devops-agent
+name: sre-agent
 version: 0.1.0
 description: "SRE/DevOps support agent for answering developer questions about service health, deployments, and platform state"
 hermes_requires: ">=0.12.0"

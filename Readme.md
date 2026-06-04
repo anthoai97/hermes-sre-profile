@@ -33,7 +33,7 @@ charts/hermes-agent/       Helm chart for running Hermes in Kubernetes
 From this repository:
 
 ```sh
-hermes profile install ./profiles/sre-agent --alias sre-devops-agent
+hermes profile install ./profiles/sre-agent --alias sre-agent
 ```
 
 Configure model access in the installed profile `.env`:

@@ -1,4 +1,4 @@
-# SRE DevOps Agent Profile
+# SRE Agent Profile
 
 This Hermes profile distribution packages a read-only SRE/DevOps support agent for answering developer questions about platform state, service health, and deployments.
 
@@ -18,13 +18,13 @@ I deployed service A, but nothing changed. What should I check?
 From a published git repo:
 
 ```sh
-hermes profile install github.com/your-org/sre-devops-agent --alias
+hermes profile install github.com/anthoai97/hermes-sre-profile/profiles/sre-agent --alias sre-agent
 ```
 
 From this local directory while developing:
 
 ```sh
-hermes profile install ./profiles/sre-devops-agent --alias
+hermes profile install ./profiles/sre-agent --alias sre-agent
 ```
 
 ## Configure
@@ -32,7 +32,7 @@ hermes profile install ./profiles/sre-devops-agent --alias
 Copy the generated example env file and fill in your model key:
 
 ```sh
-cp ~/.hermes/profiles/sre-devops-agent/.env.EXAMPLE ~/.hermes/profiles/sre-devops-agent/.env
+cp ~/.hermes/profiles/sre-agent/.env.EXAMPLE ~/.hermes/profiles/sre-agent/.env
 ```
 
 Required variable:
@@ -104,13 +104,13 @@ Slack and Telegram gateway toolsets are also restricted to terminal access. The 
 ## Run
 
 ```sh
-sre-devops-agent chat
+sre-agent chat
 ```
 
 or:
 
 ```sh
-hermes -p sre-devops-agent chat
+hermes -p sre-agent chat
 ```
 
 ## Platform Gateway
@@ -118,7 +118,7 @@ hermes -p sre-devops-agent chat
 For Slack or Telegram, configure platform tokens in the installed profile `.env`, restrict allowed channels/chats in `config.yaml`, then run:
 
 ```sh
-hermes --profile sre-devops-agent gateway run
+hermes --profile sre-agent gateway run
 ```
 
 The profile does not enable Hermes platform presets for Slack or Telegram. Gateway tool access is restricted to terminal-only read-only `kubectl` investigation.
@@ -128,7 +128,7 @@ The profile does not enable Hermes platform presets for Slack or Telegram. Gatew
 After this distribution is published and changed:
 
 ```sh
-hermes profile update sre-devops-agent
+hermes profile update sre-agent
 ```
 
 Hermes preserves local user-owned files such as `.env`, memories, sessions, logs, and local state.

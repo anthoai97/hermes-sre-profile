@@ -1,0 +1,25 @@
+.DS_Store
+
+# Hermes local state and credentials
+.env
+auth.json
+memories/
+sessions/
+state.db*
+logs/
+workspace/
+plans/
+home/
+local/
+*_cache/
+
+# Helm/local values commonly contain credentials or environment-specific settings
+values.local.yaml
+*.local.yaml
+
+# Editor and build artifacts
+.idea/
+.vscode/
+tmp/
+dist/
+build/

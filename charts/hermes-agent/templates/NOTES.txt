@@ -1,0 +1,16 @@
+Hermes agent has been installed.
+
+Release: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+Dashboard service:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "hermes-agent.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+
+Then open:
+  http://127.0.0.1:{{ .Values.service.port }}
+
+Hermes home:
+  {{ .Values.hermesHome }}
+
+Config file:
+  {{ .Values.hermesHome }}/config.yaml

@@ -1,0 +1,113 @@
+replicaCount: 1
+
+image:
+  repository: nousresearch/hermes-agent
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+command: []
+
+args:
+  - gateway
+  - run
+
+hermesHome: /opt/data
+
+profile:
+  name: ""
+
+kubectl:
+  enabled: true
+  version: v1.30.14
+  arch: amd64
+  installPath: /opt/kubectl-bin
+  verifyChecksum: true
+  image:
+    repository: curlimages/curl
+    tag: 8.8.0
+    pullPolicy: IfNotPresent
+  securityContext:
+    runAsUser: 0
+    runAsNonRoot: false
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+rbac:
+  create: true
+  clusterWide: true
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 9119
+  targetPort: 9119
+  annotations: {}
+
+dashboard:
+  enabled: true
+  insecure: true
+
+config:
+  enabled: true
+  fileName: config.yaml
+  existingConfigMap: ""
+  raw: ""
+  data:
+    model:
+      provider: openrouter
+      default: anthropic/claude-sonnet-4
+      base_url: ""
+      api_mode: chat_completions
+    agent:
+      max_turns: 90
+    terminal:
+      timeout: 180
+    compression:
+      enabled: true
+    memory:
+      memory_enabled: true
+      user_profile_enabled: true
+
+env: []
+
+envFrom: []
+
+persistence:
+  enabled: true
+  mountPath: /opt/data
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+  storageClassName: ""
+  existingClaim: ""
+  annotations: {}
+
+resources:
+  limits:
+    cpu: "2"
+    memory: 4Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+extraVolumes: []
+extraVolumeMounts: []

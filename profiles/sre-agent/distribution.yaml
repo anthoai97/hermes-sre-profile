@@ -1,0 +1,22 @@
+name: sre-devops-agent
+version: 0.1.0
+description: "SRE/DevOps support agent for answering developer questions about service health, deployments, and platform state"
+hermes_requires: ">=0.12.0"
+author: "Andy Quach"
+license: "MIT"
+env_requires:
+  - name: OPENROUTER_API_KEY
+    description: "OpenRouter API key for model access"
+    required: true
+  - name: LOCAL_LLM_BASE_URL
+    description: "Optional local OpenAI-compatible LLM endpoint, for example llama.cpp / llama-server"
+    required: false
+  - name: LOCAL_LLM_MODEL
+    description: "Optional local model name served by LOCAL_LLM_BASE_URL"
+    required: false
+distribution_owned:
+  - SOUL.md
+  - config.yaml
+  - skills/
+  - cron/
+  - distribution.yaml

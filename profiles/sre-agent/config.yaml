@@ -1,0 +1,80 @@
+model:
+  provider: openrouter
+  default: anthropic/claude-sonnet-4
+  api_mode: chat_completions
+
+fallback_providers:
+  - provider: openai-codex
+    model: gpt-5-codex
+  - provider: custom:llmcpp
+    model: "${LOCAL_LLM_MODEL}"
+
+custom_providers:
+  - name: llmcpp
+    base_url: "${LOCAL_LLM_BASE_URL}"
+    api_mode: chat_completions
+    # api_key omitted: Hermes treats keyless local servers as no-key-required.
+
+toolsets:
+  - terminal
+
+platform_toolsets:
+  telegram:
+    - terminal
+  slack:
+    - terminal
+
+agent:
+  max_turns: 90
+  disabled_toolsets:
+    - browser
+    - code_execution
+    - cronjob
+    - debugging
+    - delegation
+    - file
+    - image_gen
+    - memory
+    - safe
+    - search
+    - session_search
+    - skills
+    - todo
+    - tts
+    - video
+    - vision
+    - web
+
+terminal:
+  backend: local
+  cwd: "."
+  timeout: 180
+  env_passthrough: []
+
+compression:
+  enabled: true
+
+memory:
+  memory_enabled: false
+  user_profile_enabled: false
+
+skills:
+  external_dirs: []
+  template_vars: true
+  inline_shell: false
+  guard_agent_created: true
+
+curator:
+  enabled: false
+
+approvals:
+  mode: manual
+  timeout: 60
+  cron_mode: deny
+
+telegram:
+  allowed_chats: ""
+
+slack:
+  require_mention: true
+  allowed_channels: ""

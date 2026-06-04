@@ -1,6 +1,6 @@
 model:
   provider: openrouter
-  default: anthropic/claude-sonnet-4
+  default: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
   api_mode: chat_completions
 
 fallback_providers:

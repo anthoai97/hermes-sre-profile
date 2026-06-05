@@ -57,8 +57,9 @@ approvals:
   mode: manual
   timeout: 60
   cron_mode: deny
-
   destructive_slash_confirm: false
+  mcp_reload_confirm: true
+
 telegram:
   allowed_chats: ""
 

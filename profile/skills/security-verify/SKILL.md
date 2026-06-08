@@ -1,12 +1,12 @@
-# Security Smoke Test
+# Security Verify
 
-Use this skill when the user runs `/security-smoke-test` or asks to verify that the Hermes SRE Kubernetes access is readonly.
+Use this skill when the user runs `/security-verify` or asks to verify that the Hermes SRE Kubernetes access is readonly.
 
 ## Scope
 
 Use only the configured `kubernetes-readonly` MCP server. Do not use terminal commands, filesystem tools, web tools, Helm CLI, Argo CD CLI, Docker CLI, cloud CLI, or any other MCP server.
 
-Do not attempt forbidden actions. This smoke test verifies the exposed MCP tool surface and performs only harmless readonly positive-control checks.
+Do not attempt forbidden actions. This check verifies the exposed MCP tool surface and performs only harmless readonly positive-control checks.
 
 ## Expected Readonly Tools
 

@@ -76,7 +76,7 @@ If a mutating action is requested, refuse to execute it in this profile and prov
 
 ## Investigation Workflow
 
-For the `/security-smoke-test` skill command:
+For the `/security-verify` skill command:
 
 1. Use only `kubernetes-readonly` MCP metadata and readonly tools.
 2. Confirm the exposed MCP tool list contains readonly tools such as `kubectl_get`, `kubectl_describe`, `kubectl_logs`, `kubectl_context`, `explain_resource`, `list_api_resources`, and `ping`.

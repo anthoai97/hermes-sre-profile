@@ -19,7 +19,7 @@ How many services are running in staging?
 Is custody-service running in dev?
 What happened with payment-api after my deployment?
 I deployed service A, but nothing changed. What should I check?
-/security-smoke-test
+/security-verify
 ```
 
 ## Contents
@@ -114,6 +114,6 @@ See [charts/hermes-agent/README.md](charts/hermes-agent/README.md) for chart det
 - No pod exec/attach/port-forward access.
 - No file, browser, web, terminal, or code execution toolsets in the Hermes profile.
 - No persistent memory for cross-session operational facts.
-- `/security-smoke-test` is a dedicated skill slash command that verifies the MCP tool surface is readonly and performs a harmless readonly positive-control check.
+- `/security-verify` is a dedicated skill slash command that verifies the MCP tool surface is readonly and performs a harmless readonly positive-control check.
 
 See [SOUL.md](profile/SOUL.md) for the full agent behavior policy.

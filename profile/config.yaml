@@ -89,6 +89,21 @@ approvals:
 telegram:
   allowed_chats: ""
 
+gateway:
+  platforms:
+    telegram:
+      extra:
+        allow_admin_from:
+          - "__no_admins__"
+        user_allowed_commands:
+          - start
+          - security-verify
+        group_allow_admin_from:
+          - "__no_group_admins__"
+        group_user_allowed_commands:
+          - start
+          - security-verify
+
 slack:
   require_mention: true
   allowed_channels: ""

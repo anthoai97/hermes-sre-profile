@@ -1,6 +1,6 @@
 # Project Context
 
-Hermes SRE is a Hermes Agent profile for readonly Kubernetes service triage through a readonly Kubernetes MCP server.
+Hermes SRE is a Hermes Agent profile for simple readonly Kubernetes service checks through a readonly Kubernetes MCP server.
 
 Hermes Agent docs: `https://hermes-agent.nousresearch.com/docs/`
 

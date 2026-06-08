@@ -2,11 +2,12 @@
 
 Read-only Hermes Agent profile and deployment chart for SRE/DevOps support.
 
-The profile is designed to answer developer questions about Kubernetes service health, rollouts, pod state, endpoints, and recent events while reducing manual SRE information gathering.
+The profile is designed to answer simple developer questions about Kubernetes service health, rollout state, pod state, endpoints, and recent non-sensitive events while reducing manual SRE information gathering.
 
 ## What It Does
 
 - Answers service status questions from live Kubernetes evidence.
+- Provides a `/kubernetes-service-check` skill for simple readonly service checks.
 - Uses the readonly Kubernetes MCP server for Kubernetes inspection.
 - Refuses edit, delete, modify, restart, scale, patch, apply, rollback, exec, attach, copy, and port-forward actions.
 - Does not inspect Kubernetes Secrets or ConfigMaps.
@@ -19,6 +20,7 @@ How many services are running in staging?
 Is custody-service running in dev?
 What happened with payment-api after my deployment?
 I deployed service A, but nothing changed. What should I check?
+/kubernetes-service-check Is custody-service running in dev?
 /security-verify
 ```
 
@@ -114,6 +116,7 @@ See [charts/hermes-agent/README.md](charts/hermes-agent/README.md) for chart det
 - No pod exec/attach/port-forward access.
 - No file, browser, web, terminal, or code execution toolsets in the Hermes profile.
 - No persistent memory for cross-session operational facts.
+- `/kubernetes-service-check` is a dedicated skill slash command for simple readonly service checks.
 - `/security-verify` is a dedicated skill slash command that verifies the MCP tool surface is readonly and performs a harmless readonly positive-control check.
 
 See [SOUL.md](profile/SOUL.md) for the full agent behavior policy.

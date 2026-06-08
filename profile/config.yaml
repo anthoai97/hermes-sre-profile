@@ -1,7 +1,7 @@
 model:
-  default: gpt-5.5
-  provider: openai-codex
-  base_url: https://chatgpt.com/backend-api/codex
+  provider: openrouter
+  default: openai/gpt-oss-120b:free
+  base_url: ""
 providers: {}
 fallback_providers: []
 

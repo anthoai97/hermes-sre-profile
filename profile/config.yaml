@@ -98,11 +98,13 @@ gateway:
         user_allowed_commands:
           - start
           - security-verify
+          - kubernetes-service-check
         group_allow_admin_from:
           - "__no_group_admins__"
         group_user_allowed_commands:
           - start
           - security-verify
+          - kubernetes-service-check
 
 slack:
   require_mention: true

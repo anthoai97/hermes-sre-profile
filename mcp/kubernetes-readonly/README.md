@@ -35,6 +35,12 @@ Wait for the readonly MCP deployment:
 kubectl -n hermes-sre rollout status deployment/mcp-server-kubernetes
 ```
 
+Uninstall the MCP server:
+
+```bash
+helm uninstall mcp-server-kubernetes --namespace hermes-sre
+```
+
 Port-forward the readonly MCP service:
 
 ```bash

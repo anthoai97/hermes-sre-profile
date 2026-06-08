@@ -64,6 +64,14 @@ The installed profile expects the MCP endpoint at:
 http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
 
+The chart supplies this through:
+
+```yaml
+env:
+  - name: KUBERNETES_MCP_URL
+    value: http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
+```
+
 Pass the same token to the Hermes chart:
 
 ```yaml
@@ -177,18 +185,6 @@ Anthropic:
 ```yaml
 env:
   - name: ANTHROPIC_API_KEY
-    value: ""
-```
-
-Custom OpenAI-compatible endpoint:
-
-```yaml
-env:
-  - name: LOCAL_LLM_BASE_URL
-    value: "http://vllm.default.svc.cluster.local:8000/v1"
-  - name: LOCAL_LLM_MODEL
-    value: "your-model-name"
-  - name: CUSTOM_API_KEY
     value: ""
 ```
 

@@ -23,4 +23,10 @@ The Hermes SRE profile expects the readonly Kubernetes MCP endpoint at:
 http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
 
+For local clients or Docker Compose, keep a port-forward running:
+
+```bash
+kubectl -n hermes-sre port-forward svc/mcp-server-kubernetes 3001:3001
+```
+
 Do not commit local MCP worktrees or secret-bearing values files.

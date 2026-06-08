@@ -60,7 +60,9 @@ config:
   raw: ""
   data: {}
 
-env: []
+env:
+  - name: KUBERNETES_MCP_URL
+    value: http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 
 envFrom: []
 

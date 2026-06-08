@@ -1,7 +1,7 @@
 services:
   hermes:
     image: hermes-agent:latest
-    container_name: hermes
+    container_name: hermes-sre
     restart: unless-stopped
     command:
       - --profile
@@ -10,11 +10,12 @@ services:
       - run
     env_file:
       - .env
-    volumes:
-      - ~/Code/hermes/hermes_devops_data:/opt/data
     environment:
-      # Non-secret runtime settings can stay here.
-      - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS:-}
+      KUBERNETES_MCP_URL: ${KUBERNETES_MCP_URL:-http://host.docker.internal:3001/mcp}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./hermes_data:/opt/data
     deploy:
       resources:
         limits:

@@ -11,12 +11,9 @@ env_requires:
   - name: MCP_AUTH_TOKEN
     description: "Auth token for the readonly Kubernetes MCP server"
     required: true
-  - name: LOCAL_LLM_BASE_URL
-    description: "Optional local OpenAI-compatible LLM endpoint, for example llama.cpp / llama-server"
-    required: false
-  - name: LOCAL_LLM_MODEL
-    description: "Optional local model name served by LOCAL_LLM_BASE_URL"
-    required: false
+  - name: KUBERNETES_MCP_URL
+    description: "Readonly Kubernetes MCP HTTP endpoint"
+    required: true
 distribution_owned:
   - SOUL.md
   - config.yaml

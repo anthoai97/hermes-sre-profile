@@ -17,7 +17,16 @@ OPENAI_API_KEY=
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_ALLOWED_USERS=
 MCP_AUTH_TOKEN=
+KUBERNETES_MCP_URL=http://host.docker.internal:3001/mcp
 ```
+
+For local Docker, keep the readonly Kubernetes MCP port-forward running on the host:
+
+```sh
+kubectl -n hermes-sre port-forward svc/mcp-server-kubernetes 3001:3001
+```
+
+The container uses `host.docker.internal:3001` to reach that host port-forward. The profile sends the in-cluster Service name as the `Host` header required by MCP DNS rebinding protection.
 
 Install the profile into the local Hermes data volume:
 

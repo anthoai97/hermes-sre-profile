@@ -2,6 +2,8 @@
 
 Hermes SRE is a Hermes Agent profile for readonly Kubernetes service triage through a readonly Kubernetes MCP server.
 
+Hermes Agent docs: `https://hermes-agent.nousresearch.com/docs/`
+
 The profile source of truth is under `profile/`:
 
 - `profile/distribution.yaml`
@@ -27,6 +29,8 @@ The readonly MCP server is expected at:
 ```text
 http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
+
+The profile reads that endpoint from `KUBERNETES_MCP_URL` and sends `mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001` as the HTTP `Host` header. Local Docker Compose defaults `KUBERNETES_MCP_URL` to `http://host.docker.internal:3001/mcp` so the container can use a host-side `kubectl port-forward`.
 
 MCP setup lives in `mcp/kubernetes-readonly/`. Local MCP upstream or fork checkouts live under ignored `mcp/.worktrees/`.
 

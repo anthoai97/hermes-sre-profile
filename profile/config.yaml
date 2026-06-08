@@ -8,22 +8,16 @@ fallback_providers:
   - provider: openai-codex
     model: gpt-5-codex
 
-custom_providers:
-  - name: llmcpp
-    base_url: "${LOCAL_LLM_BASE_URL}"
-    api_mode: chat_completions
-    # Optional. Switch to it explicitly with `/model custom:llmcpp:${LOCAL_LLM_MODEL}`.
-    # api_key omitted: Hermes treats keyless local servers as no-key-required.
-
 toolsets:
   - skills
   - mcp-kubernetes-readonly
 
 mcp_servers:
   kubernetes-readonly:
-    url: "http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp"
+    url: "${KUBERNETES_MCP_URL}"
     headers:
       X-MCP-AUTH: "${MCP_AUTH_TOKEN}"
+      Host: "mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001"
     enabled: true
     timeout: 120
     connect_timeout: 60

@@ -46,15 +46,13 @@ Configure model access in the installed profile `.env`:
 ```sh
 OPENROUTER_API_KEY=
 MCP_AUTH_TOKEN=
-LOCAL_LLM_BASE_URL=http://localhost:8080/v1
-LOCAL_LLM_MODEL=
+KUBERNETES_MCP_URL=http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
 
 Provider order:
 
 - Primary: OpenRouter
 - Fallback: OpenAI Codex OAuth
-- Optional manual provider: local OpenAI-compatible `llmcpp` endpoint via `/model custom:llmcpp:${LOCAL_LLM_MODEL}`
 
 For Codex OAuth, run:
 
@@ -71,6 +69,8 @@ The agent expects the readonly Kubernetes MCP server to be available in the `her
 ```text
 http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
+
+Local Docker Compose can instead point `KUBERNETES_MCP_URL` at a host-side port-forward such as `http://host.docker.internal:3001/mcp`. The profile still sends the in-cluster Service name as the MCP `Host` header for DNS rebinding protection.
 
 The profile enables only the generated Hermes MCP toolset `mcp-kubernetes-readonly` plus `skills`.
 

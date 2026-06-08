@@ -54,7 +54,7 @@ Provider order:
 
 - Primary: OpenRouter
 - Fallback: OpenAI Codex OAuth
-- Fallback: local OpenAI-compatible `llmcpp` endpoint
+- Optional manual provider: local OpenAI-compatible `llmcpp` endpoint via `/model custom:llmcpp:${LOCAL_LLM_MODEL}`
 
 For Codex OAuth, run:
 

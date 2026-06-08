@@ -1,17 +1,18 @@
 model:
   provider: openrouter
-  model: openai/gpt-oss-120b:free
+  default: openai/gpt-oss-120b:free
+  base_url: ""
+  api_mode: chat_completions
 
 fallback_providers:
   - provider: openai-codex
     model: gpt-5-codex
-  - provider: custom:llmcpp
-    model: "${LOCAL_LLM_MODEL}"
 
 custom_providers:
   - name: llmcpp
     base_url: "${LOCAL_LLM_BASE_URL}"
     api_mode: chat_completions
+    # Optional. Switch to it explicitly with `/model custom:llmcpp:${LOCAL_LLM_MODEL}`.
     # api_key omitted: Hermes treats keyless local servers as no-key-required.
 
 toolsets:
@@ -40,6 +41,9 @@ mcp_servers:
       prompts: false
 
 platform_toolsets:
+  cli:
+    - skills
+    - mcp-kubernetes-readonly
   telegram:
     - skills
     - mcp-kubernetes-readonly
@@ -50,8 +54,22 @@ platform_toolsets:
     - mcp-kubernetes-readonly
 
 agent:
-  max_turns: 90
-  disabled_toolsets: []
+  max_turns: 40
+  disabled_toolsets:
+    - browser
+    - code_execution
+    - cronjob
+    - delegation
+    - file
+    - image_gen
+    - kanban
+    - memory
+    - moa
+    - session_search
+    - skills_hub
+    - terminal
+    - tts
+    - web
 
 compression:
   enabled: true

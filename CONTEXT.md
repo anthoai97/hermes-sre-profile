@@ -36,4 +36,4 @@ MCP setup lives in `mcp/kubernetes-readonly/`. Local MCP upstream or fork checko
 
 The Hermes chart does not deploy the MCP server and does not include a Kubernetes MCP subchart. Install the MCP server separately with `./mcp/install-kubernetes-readonly.sh`, then install Hermes with the same token through `global.mcpAuthToken`. The MCP installer pulls the Helm chart from `https://github.com/anthoai97/mcp-server-kubernetes.git` on `main` by default. The MCP install values pin the runtime image to `flux159/mcp-server-kubernetes:v3.8.0`, and DNS rebinding protection allows `mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001` by default.
 
-Keep secrets out of git. Use local `.env` files or runtime env injection for profile secrets and `MCP_AUTH_TOKEN`.
+Keep secrets out of git. Use local `.env` files or runtime env injection for `OPENROUTER_API_KEY`, `MCP_AUTH_TOKEN`, and other profile secrets.

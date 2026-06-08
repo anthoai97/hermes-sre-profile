@@ -11,6 +11,7 @@ cp local/.env.example local/.env
 Edit `local/.env` and fill only the secrets you need:
 
 ```sh
+OPENROUTER_API_KEY=
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_ALLOWED_USERS=
 MCP_AUTH_TOKEN=

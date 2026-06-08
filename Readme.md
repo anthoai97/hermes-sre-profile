@@ -46,6 +46,7 @@ hermes profile install ./profile --alias
 Configure runtime access in the installed profile `.env`:
 
 ```sh
+OPENROUTER_API_KEY=
 MCP_AUTH_TOKEN=
 KUBERNETES_MCP_URL=http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```

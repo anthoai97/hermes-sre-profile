@@ -12,5 +12,18 @@ Then open:
 Hermes home:
   {{ .Values.hermesHome }}
 
-Config file:
+Profile:
+  {{ .Values.profile.name }}
+
+Profile install source:
+  {{ .Values.profile.install.source }}
+
+{{- if .Values.profile.install.path }}
+Profile install path:
+  {{ .Values.profile.install.path }}
+
+{{- end }}
+{{- if .Values.config.enabled }}
+Chart config override:
   {{ .Values.hermesHome }}/config.yaml
+{{- end }}

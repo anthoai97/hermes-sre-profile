@@ -10,12 +10,15 @@ logs/
 workspace/
 plans/
 home/
-local/
 *_cache/
 
 # Helm/local values commonly contain credentials or environment-specific settings
 values.local.yaml
 *.local.yaml
+mcp/kubernetes-readonly/values.local.yaml
+
+# Local MCP source checkouts are development scratch space, not profile content.
+mcp/.worktrees/
 
 # Editor and build artifacts
 .idea/
@@ -23,3 +26,4 @@ values.local.yaml
 tmp/
 dist/
 build/
+temp/

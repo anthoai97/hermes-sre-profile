@@ -80,8 +80,15 @@ Name of the Hermes config ConfigMap.
 {{- end }}
 
 {{/*
+Whether the chart needs to bootstrap Hermes home before the main container starts.
+*/}}
+{{- define "hermes-agent.needsBootstrap" -}}
+{{- if or .Values.config.enabled .Values.profile.install.enabled -}}true{{- end -}}
+{{- end }}
+
+{{/*
 Whether the chart needs a shared Hermes home volume.
 */}}
 {{- define "hermes-agent.needsDataVolume" -}}
-{{- if or .Values.persistence.enabled .Values.config.enabled -}}true{{- end -}}
+{{- if or .Values.persistence.enabled .Values.config.enabled .Values.profile.install.enabled -}}true{{- end -}}
 {{- end }}

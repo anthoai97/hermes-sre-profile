@@ -8,6 +8,9 @@ env_requires:
   - name: OPENROUTER_API_KEY
     description: "OpenRouter API key for model access"
     required: true
+  - name: MCP_AUTH_TOKEN
+    description: "Auth token for the readonly Kubernetes MCP server"
+    required: true
   - name: LOCAL_LLM_BASE_URL
     description: "Optional local OpenAI-compatible LLM endpoint, for example llama.cpp / llama-server"
     required: false

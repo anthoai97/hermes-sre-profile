@@ -1,5 +1,8 @@
 replicaCount: 1
 
+global:
+  mcpAuthToken: ""
+
 image:
   repository: nousresearch/hermes-agent
   tag: latest
@@ -18,30 +21,18 @@ args:
 hermesHome: /opt/data
 
 profile:
-  name: ""
-
-kubectl:
-  enabled: true
-  version: v1.30.14
-  arch: amd64
-  installPath: /opt/kubectl-bin
-  verifyChecksum: true
-  image:
-    repository: curlimages/curl
-    tag: 8.8.0
-    pullPolicy: IfNotPresent
-  securityContext:
-    runAsUser: 0
-    runAsNonRoot: false
+  name: sre-agent
+  install:
+    enabled: true
+    source: https://github.com/anthoai97/hermes-sre-profile.git
+    path: profile
+    alias: true
+    setup: false
+    extraArgs: []
 
 serviceAccount:
   create: true
   annotations: {}
-  name: ""
-
-rbac:
-  create: true
-  clusterWide: true
   name: ""
 
 podAnnotations: {}
@@ -63,25 +54,11 @@ dashboard:
   insecure: true
 
 config:
-  enabled: true
+  enabled: false
   fileName: config.yaml
   existingConfigMap: ""
   raw: ""
-  data:
-    model:
-      provider: openrouter
-      default: anthropic/claude-sonnet-4
-      base_url: ""
-      api_mode: chat_completions
-    agent:
-      max_turns: 90
-    terminal:
-      timeout: 180
-    compression:
-      enabled: true
-    memory:
-      memory_enabled: true
-      user_profile_enabled: true
+  data: {}
 
 env: []
 

@@ -7,7 +7,7 @@ The profile is designed to answer developer questions about Kubernetes service h
 ## What It Does
 
 - Answers service status questions from live Kubernetes evidence.
-- Uses terminal access only for read-only `kubectl` inspection.
+- Uses the readonly Kubernetes MCP server for Kubernetes inspection.
 - Refuses edit, delete, modify, restart, scale, patch, apply, rollback, exec, attach, copy, and port-forward actions.
 - Does not inspect Kubernetes Secrets or ConfigMaps.
 - Keeps memory disabled so new sessions do not reuse stale operational state.
@@ -19,16 +19,16 @@ How many services are running in staging?
 Is custody-service running in dev?
 What happened with payment-api after my deployment?
 I deployed service A, but nothing changed. What should I check?
+/security-smoke-test
 ```
 
 ## Contents
 
 ```text
-SOUL.md                    Agent behavior policy
-config.yaml                Hermes profile config
-distribution.yaml          Hermes distribution manifest
-skills/                    Bundled SRE triage skill
+profile/                   Hermes SRE profile distribution
 charts/hermes-agent/       Helm chart for running Hermes in Kubernetes
+local/                     Local Docker Compose development setup
+mcp/                       MCP install setup; see `mcp/kubernetes-readonly/`
 ```
 
 ## Profile Install
@@ -36,13 +36,16 @@ charts/hermes-agent/       Helm chart for running Hermes in Kubernetes
 From this repository:
 
 ```sh
-hermes profile install github.com/anthoai97/hermes-sre-profile --alias
+git clone https://github.com/anthoai97/hermes-sre-profile.git
+cd hermes-sre-profile
+hermes profile install ./profile --alias
 ```
 
 Configure model access in the installed profile `.env`:
 
 ```sh
 OPENROUTER_API_KEY=
+MCP_AUTH_TOKEN=
 LOCAL_LLM_BASE_URL=http://localhost:8080/v1
 LOCAL_LLM_MODEL=
 ```
@@ -61,19 +64,15 @@ hermes model
 
 Then choose OpenAI Codex and complete the OAuth flow.
 
-## Kubernetes Scope
+## Kubernetes MCP Scope
 
-The agent expects `kubectl` to be available in its runtime environment and uses only read-only commands such as:
+The agent expects the readonly Kubernetes MCP server to be available in the `hermes-sre` namespace:
 
-```sh
-kubectl get ...
-kubectl describe ...
-kubectl logs ...
-kubectl rollout status ...
-kubectl rollout history ...
-kubectl events ...
-kubectl top ...
+```text
+http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
+
+The profile enables only the generated Hermes MCP toolset `mcp-kubernetes-readonly` plus `skills`.
 
 Do not grant:
 
@@ -86,20 +85,39 @@ Do not grant:
 
 ## Helm Chart
 
+Install the readonly Kubernetes MCP server first:
+
+```sh
+export MCP_AUTH_TOKEN="<choose-a-long-random-token>"
+./mcp/install-kubernetes-readonly.sh
+```
+
 Install:
 
 ```sh
-helm upgrade --install hermes ./charts/hermes-agent -f values.local.yaml
+helm upgrade --install hermes ./charts/hermes-agent \
+  -n hermes-sre \
+  --create-namespace \
+  --set-string "global.mcpAuthToken=${MCP_AUTH_TOKEN}" \
+  -f values.local.yaml
 ```
 
-The chart includes read-only RBAC and optional runtime installation of `kubectl` via an init container. Control the kubectl version in chart values:
+The chart deploys Hermes in Kubernetes, installs this profile from GitHub during pod bootstrap, and then runs Hermes with the installed profile:
+
+```text
+git clone --depth 1 https://github.com/anthoai97/hermes-sre-profile.git hermes-sre-profile
+hermes profile install hermes-sre-profile/profile --alias --yes
+hermes --profile sre-agent gateway run
+```
+
+It does not install `kubectl`, does not deploy the MCP server, and does not create Kubernetes RBAC for the Hermes agent pod. The separately installed readonly MCP server owns Kubernetes RBAC. Provide the same MCP auth token to Hermes through `global.mcpAuthToken`:
 
 ```yaml
-kubectl:
-  enabled: true
-  version: v1.30.14
-  arch: amd64
+global:
+  mcpAuthToken: "<choose-a-long-random-token>"
 ```
+
+The profile directory remains the source of truth for `profile/config.yaml`, `profile/SOUL.md`, and `profile/skills/`. The chart should not vendor or duplicate profile files.
 
 See [charts/hermes-agent/README.md](charts/hermes-agent/README.md) for chart details.
 
@@ -108,7 +126,8 @@ See [charts/hermes-agent/README.md](charts/hermes-agent/README.md) for chart det
 - No Kubernetes Secret access.
 - No ConfigMap access.
 - No pod exec/attach/port-forward access.
-- No file, browser, web, MCP, or code execution toolsets in the Hermes profile.
+- No file, browser, web, terminal, or code execution toolsets in the Hermes profile.
 - No persistent memory for cross-session operational facts.
+- `/security-smoke-test` is a dedicated skill slash command that verifies the MCP tool surface is readonly and performs a harmless readonly positive-control check.
 
-See [SOUL.md](SOUL.md) for the full agent behavior policy.
+See [SOUL.md](profile/SOUL.md) for the full agent behavior policy.

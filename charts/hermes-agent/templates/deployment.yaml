@@ -11,6 +11,7 @@ spec:
       {{- include "hermes-agent.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- if or (and .Values.config.enabled (not .Values.config.existingConfigMap)) .Values.podAnnotations }}
       annotations:
         {{- if and .Values.config.enabled (not .Values.config.existingConfigMap) }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
@@ -18,6 +19,7 @@ spec:
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- end }}
       labels:
         {{- include "hermes-agent.selectorLabels" . | nindent 8 }}
         {{- with .Values.podLabels }}
@@ -33,33 +35,9 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- if or .Values.config.enabled .Values.kubectl.enabled }}
+      {{- if include "hermes-agent.needsBootstrap" . }}
       initContainers:
-        {{- if .Values.kubectl.enabled }}
-        - name: install-kubectl
-          image: "{{ .Values.kubectl.image.repository }}:{{ .Values.kubectl.image.tag }}"
-          imagePullPolicy: {{ .Values.kubectl.image.pullPolicy }}
-          {{- with .Values.kubectl.securityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          command:
-            - sh
-            - -ec
-            - |
-              set -eu
-              url="https://dl.k8s.io/release/{{ .Values.kubectl.version }}/bin/linux/{{ .Values.kubectl.arch }}/kubectl"
-              curl -L "$url" -o /kubectl-bin/kubectl
-              {{- if .Values.kubectl.verifyChecksum }}
-              curl -L "${url}.sha256" -o /kubectl-bin/kubectl.sha256
-              echo "$(cat /kubectl-bin/kubectl.sha256)  /kubectl-bin/kubectl" | sha256sum -c -
-              {{- end }}
-              chmod 0755 /kubectl-bin/kubectl
-          volumeMounts:
-            - name: kubectl-bin
-              mountPath: /kubectl-bin
-        {{- end }}
-        {{- if .Values.config.enabled }}
+        {{- if include "hermes-agent.needsBootstrap" . }}
         - name: bootstrap-hermes-home
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -67,10 +45,41 @@ spec:
             - sh
             - -ec
             - |
+              set -eu
               mkdir -p "{{ .Values.hermesHome }}"
               {{- if .Values.config.enabled }}
               cp "/bootstrap/config/{{ .Values.config.fileName }}" "{{ .Values.hermesHome }}/config.yaml"
               {{- end }}
+              {{- if .Values.profile.install.enabled }}
+              profile_source={{ .Values.profile.install.source | quote }}
+              profile_path={{ .Values.profile.install.path | quote }}
+              if [ -n "$profile_path" ]; then
+                workdir="{{ .Values.hermesHome }}/profile-install"
+                rm -rf "$workdir"
+                mkdir -p "$workdir"
+                git clone --depth 1 "$profile_source" "$workdir/repo"
+                hermes profile install "$workdir/repo/$profile_path"{{- if .Values.profile.install.alias }} --alias{{- end }} --yes{{- range .Values.profile.install.extraArgs }} {{ . | quote }}{{- end }}
+              else
+                hermes profile install "$profile_source"{{- if .Values.profile.install.alias }} --alias{{- end }} --yes{{- range .Values.profile.install.extraArgs }} {{ . | quote }}{{- end }}
+              fi
+              {{- if .Values.profile.install.setup }}
+              hermes --profile {{ .Values.profile.name | quote }} setup
+              {{- end }}
+              {{- end }}
+          env:
+            - name: HERMES_HOME
+              value: {{ .Values.hermesHome | quote }}
+            {{- if .Values.global.mcpAuthToken }}
+            - name: MCP_AUTH_TOKEN
+              value: {{ .Values.global.mcpAuthToken | quote }}
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: data
               mountPath: {{ .Values.hermesHome }}
@@ -102,9 +111,9 @@ spec:
               value: {{ ternary "1" "0" .Values.dashboard.insecure | quote }}
             - name: HERMES_HOME
               value: {{ .Values.hermesHome | quote }}
-            {{- if .Values.kubectl.enabled }}
-            - name: PATH
-              value: "{{ .Values.kubectl.installPath }}:/usr/local/bin:/usr/bin:/bin"
+            {{- if .Values.global.mcpAuthToken }}
+            - name: MCP_AUTH_TOKEN
+              value: {{ .Values.global.mcpAuthToken | quote }}
             {{- end }}
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
@@ -121,16 +130,11 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if or (include "hermes-agent.needsDataVolume" .) .Values.kubectl.enabled .Values.extraVolumeMounts }}
+          {{- if or (include "hermes-agent.needsDataVolume" .) .Values.extraVolumeMounts }}
           volumeMounts:
             {{- if include "hermes-agent.needsDataVolume" . }}
             - name: data
               mountPath: {{ .Values.hermesHome }}
-            {{- end }}
-            {{- if .Values.kubectl.enabled }}
-            - name: kubectl-bin
-              mountPath: {{ .Values.kubectl.installPath }}
-              readOnly: true
             {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
@@ -140,7 +144,7 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-      {{- if or (include "hermes-agent.needsDataVolume" .) .Values.kubectl.enabled .Values.extraVolumes }}
+      {{- if or (include "hermes-agent.needsDataVolume" .) .Values.extraVolumes }}
       volumes:
         {{- if include "hermes-agent.needsDataVolume" . }}
         - name: data
@@ -150,10 +154,6 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-        {{- end }}
-        {{- if .Values.kubectl.enabled }}
-        - name: kubectl-bin
-          emptyDir: {}
         {{- end }}
         {{- if .Values.config.enabled }}
         - name: hermes-config

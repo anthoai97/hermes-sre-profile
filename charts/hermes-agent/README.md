@@ -24,18 +24,54 @@ resources:
 helm install hermes ./charts/hermes-agent
 ```
 
-To run the gateway with a fixed Hermes profile, set `profile.name`:
+By default, the chart installs the Hermes SRE profile from GitHub during pod bootstrap, then runs the gateway with that profile:
 
 ```yaml
 profile:
-  name: hermes-agent-default
+  name: sre-agent
+  install:
+    enabled: true
+    source: https://github.com/anthoai97/hermes-sre-profile.git
+    path: profile
+    alias: true
 ```
 
-This renders container args equivalent to:
+The bootstrap init container runs:
 
 ```sh
-hermes --profile hermes-agent-default gateway run
+git clone --depth 1 https://github.com/anthoai97/hermes-sre-profile.git hermes-sre-profile
+hermes profile install hermes-sre-profile/profile --alias --yes
 ```
+
+The main container then runs:
+
+```sh
+hermes --profile sre-agent gateway run
+```
+
+## Readonly Kubernetes MCP
+
+This chart does not install the Kubernetes MCP server. Install the readonly MCP server separately from the repository root:
+
+```sh
+export MCP_AUTH_TOKEN="<choose-a-long-random-token>"
+./mcp/install-kubernetes-readonly.sh
+```
+
+The installed profile expects the MCP endpoint at:
+
+```text
+http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
+```
+
+Pass the same token to the Hermes chart:
+
+```yaml
+global:
+  mcpAuthToken: "<choose-a-long-random-token>"
+```
+
+The MCP install values live in `mcp/kubernetes-readonly/values.yaml`. The installer pulls the Helm chart from `https://github.com/anthoai97/mcp-server-kubernetes.git` on `main` by default. The values pin the runtime image to `flux159/mcp-server-kubernetes:v3.8.0`, enable service account auth, and keep the MCP RBAC readonly without Secrets or ConfigMaps access.
 
 ## Access the dashboard
 
@@ -47,37 +83,31 @@ Open `http://127.0.0.1:9119`.
 
 ## Configure API keys
 
-The chart supports Hermes' non-interactive onboarding model:
+The chart supports Hermes' profile-based deployment model:
 
-- `config.yaml` for non-secret settings
+- the profile is installed into `HERMES_HOME`, defaulting to `/opt/data`
+- the profile directory is the source of truth for `config.yaml`, `SOUL.md`, and `skills/`
 - runtime environment variables for provider keys and tokens
-- `config.yaml` is written into `HERMES_HOME`, defaulting to `/opt/data`
+- the chart can optionally write an extra `config.yaml` override, but this is disabled by default
 
-By default, the chart creates a ConfigMap and an init container writes:
+By default, the chart does not vendor profile files into the Helm chart. The init container pulls the profile from:
 
 ```text
-/opt/data/config.yaml
+https://github.com/anthoai97/hermes-sre-profile.git, subdirectory `profile/`
 ```
 
-The default config is a general Hermes config:
+If you need a chart-local config override, enable `config.enabled`. Prefer changing the profile directory instead when the setting belongs to the SRE profile:
 
 ```yaml
 config:
+  enabled: true
   data:
     model:
-      provider: openrouter
-      default: anthropic/claude-sonnet-4
-      base_url: ""
+      provider: openai
+      default: gpt-4o
       api_mode: chat_completions
     agent:
       max_turns: 90
-    terminal:
-      timeout: 180
-    compression:
-      enabled: true
-    memory:
-      memory_enabled: true
-      user_profile_enabled: true
 ```
 
 To override the full file as raw YAML:
@@ -88,8 +118,6 @@ config:
     model:
       provider: openai
       default: gpt-4o
-    terminal:
-      timeout: 180
 ```
 
 For provider keys, inject runtime environment variables from your own deployment pipeline. The chart does not render, mount, or reference Kubernetes Secret resources:
@@ -105,86 +133,32 @@ env:
 Install with:
 
 ```sh
-helm upgrade --install hermes ./charts/hermes-agent -f values.local.yaml
+helm upgrade --install hermes ./charts/hermes-agent -n hermes-sre --create-namespace -f values.local.yaml
 ```
 
-## Kubernetes read-only access
+## Kubernetes MCP access
 
-By default, the chart creates read-only RBAC for the Hermes service account so the pod can run in-cluster `kubectl` inspection commands.
-
-```yaml
-rbac:
-  create: true
-  clusterWide: true
-```
-
-This grants `get`, `list`, and `watch` for common workload and networking resources, plus `get` for `pods/log`. It does not grant access to Kubernetes Secrets, ConfigMaps, `pods/exec`, `pods/attach`, or `pods/portforward`.
-
-For namespace-only access:
-
-```yaml
-rbac:
-  create: true
-  clusterWide: false
-```
-
-To manage RBAC outside this chart:
-
-```yaml
-rbac:
-  create: false
-```
-
-## Kubectl installation
-
-By default, the chart installs `kubectl` at pod startup with an init container. This avoids maintaining a custom Hermes image.
-
-```yaml
-kubectl:
-  enabled: true
-  version: v1.30.14
-  arch: amd64
-  installPath: /opt/kubectl-bin
-  verifyChecksum: true
-  image:
-    repository: curlimages/curl
-    tag: 8.8.0
-    pullPolicy: IfNotPresent
-  securityContext:
-    runAsUser: 0
-    runAsNonRoot: false
-```
-
-The init container downloads:
+The Hermes profile expects the separately installed readonly Kubernetes MCP server at:
 
 ```text
-https://dl.k8s.io/release/<version>/bin/linux/<arch>/kubectl
+http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
 
-When `kubectl.verifyChecksum=true`, it also downloads the matching `.sha256` file and validates the binary before making it executable. This matches the official Kubernetes Linux install flow.
+The Hermes profile enables the generated MCP toolset `mcp-kubernetes-readonly` and filters it to readonly Kubernetes tools.
 
-It writes the binary to a shared `emptyDir`, and the Hermes container gets `PATH=/opt/kubectl-bin:/usr/local/bin:/usr/bin:/bin`.
+Set `global.mcpAuthToken` to the same value used as `MCP_AUTH_TOKEN` when installing `mcp-server-kubernetes`.
 
-Set `kubectl.arch` to `arm64` for ARM nodes.
+## RBAC
 
-Disable this when using an image that already contains `kubectl`:
+Hermes does not need direct Kubernetes API permissions when using MCP-only mode. This chart does not create Role, ClusterRole, RoleBinding, or ClusterRoleBinding resources for the Hermes pod.
 
-```yaml
-kubectl:
-  enabled: false
-```
+The Hermes pod still uses a Kubernetes ServiceAccount for identity, but that ServiceAccount has no chart-created Kubernetes API permissions. Kubernetes API permissions belong to the separately installed readonly MCP server.
 
-## Provider examples
+## Runtime environment examples
 
 OpenRouter:
 
 ```yaml
-config:
-  data:
-    model:
-      provider: openrouter
-      default: anthropic/claude-sonnet-4
-
 env:
   - name: OPENROUTER_API_KEY
     value: ""
@@ -193,12 +167,6 @@ env:
 OpenAI:
 
 ```yaml
-config:
-  data:
-    model:
-      provider: openai
-      default: gpt-4o
-
 env:
   - name: OPENAI_API_KEY
     value: ""
@@ -207,12 +175,6 @@ env:
 Anthropic:
 
 ```yaml
-config:
-  data:
-    model:
-      provider: anthropic
-      default: claude-sonnet-4-20250514
-
 env:
   - name: ANTHROPIC_API_KEY
     value: ""
@@ -221,18 +183,16 @@ env:
 Custom OpenAI-compatible endpoint:
 
 ```yaml
-config:
-  data:
-    model:
-      provider: custom
-      default: your-model-name
-      base_url: http://vllm.default.svc.cluster.local:8000/v1
-      api_key: "${CUSTOM_API_KEY}"
-
 env:
+  - name: LOCAL_LLM_BASE_URL
+    value: "http://vllm.default.svc.cluster.local:8000/v1"
+  - name: LOCAL_LLM_MODEL
+    value: "your-model-name"
   - name: CUSTOM_API_KEY
     value: ""
 ```
+
+Model/provider routing belongs in the installed profile. The chart should only inject runtime environment needed by that profile.
 
 The chart intentionally has no `envFile`, `createSecret`, or Secret reference example. Avoid putting real credentials in values files.
 

@@ -15,26 +15,43 @@ custom_providers:
     # api_key omitted: Hermes treats keyless local servers as no-key-required.
 
 toolsets:
-  - terminal
+  - skills
+  - mcp-kubernetes-readonly
+
+mcp_servers:
+  kubernetes-readonly:
+    url: "http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp"
+    headers:
+      X-MCP-AUTH: "${MCP_AUTH_TOKEN}"
+    enabled: true
+    timeout: 120
+    connect_timeout: 60
+    supports_parallel_tool_calls: false
+    tools:
+      include:
+        - kubectl_get
+        - kubectl_describe
+        - kubectl_logs
+        - kubectl_context
+        - explain_resource
+        - list_api_resources
+        - ping
+      resources: false
+      prompts: false
 
 platform_toolsets:
   telegram:
     - skills
-    - terminal
+    - mcp-kubernetes-readonly
     - vision
     - messaging
   slack:
-    - terminal
+    - skills
+    - mcp-kubernetes-readonly
 
 agent:
   max_turns: 90
   disabled_toolsets: []
-
-terminal:
-  backend: local
-  cwd: "."
-  timeout: 180
-  env_passthrough: []
 
 compression:
   enabled: true

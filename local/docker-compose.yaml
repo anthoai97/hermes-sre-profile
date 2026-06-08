@@ -1,0 +1,22 @@
+services:
+  hermes:
+    image: hermes-agent:latest
+    container_name: hermes
+    restart: unless-stopped
+    command:
+      - --profile
+      - sre-agent
+      - gateway
+      - run
+    env_file:
+      - .env
+    volumes:
+      - ~/Code/hermes/hermes_devops_data:/opt/data
+    environment:
+      # Non-secret runtime settings can stay here.
+      - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS:-}
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: "2.0"

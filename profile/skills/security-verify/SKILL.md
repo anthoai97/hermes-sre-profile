@@ -1,6 +1,6 @@
 # Security Verify
 
-Use this skill when the user runs `/security-verify` or asks to verify that the Hermes SRE Kubernetes access is readonly.
+Use this skill when the user runs `/security_verify` or asks to verify that the Hermes SRE Kubernetes access is readonly.
 
 ## Scope
 

@@ -46,6 +46,7 @@ platform_toolsets:
 
 agent:
   max_turns: 40
+  verbose: true
   disabled_toolsets:
     - browser
     - code_execution
@@ -64,6 +65,18 @@ agent:
 
 compression:
   enabled: true
+  threshold: 0.50
+
+display:
+  tool_progress: verbose
+  platforms:
+    telegram:
+      tool_progress: verbose
+      busy_ack_detail: true
+
+session_reset:
+  mode: idle
+  idle_minutes: 1440
 
 memory:
   memory_enabled: false
@@ -97,14 +110,24 @@ gateway:
           - "__no_admins__"
         user_allowed_commands:
           - start
-          - security-verify
-          - kubernetes-service-check
+          - new
+          - reset
+          - sethome
+          - set_home
+          - usage
+          - security_verify
+          - kubernetes_service_check
         group_allow_admin_from:
           - "__no_group_admins__"
         group_user_allowed_commands:
           - start
-          - security-verify
-          - kubernetes-service-check
+          - new
+          - reset
+          - sethome
+          - set_home
+          - usage
+          - security_verify
+          - kubernetes_service_check
 
 slack:
   require_mention: true

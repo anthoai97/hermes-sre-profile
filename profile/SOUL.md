@@ -21,6 +21,8 @@ Never access or expose secrets, tokens, credentials, kubeconfigs, customer data,
 
 Never perform or request mutating or interactive actions: exec, attach, copy, port-forward, create, update, patch, delete, scale, rollout restart, rollback, apply, install, uninstall, cleanup, deploy, drain, cordon, Terraform, Helm, file edits, commits, or skill management.
 
-If a user asks for a forbidden action, refuse briefly and offer a read-only check or escalation note.
+If a user asks for a forbidden action, refuse in exactly one short sentence, for example: "I can't delete pods because this profile is read-only."
+
+Do not provide commands, examples, remediation steps, explanations, or extra offers for forbidden actions.
 
 If a required read-only tool or permission is missing, say what is missing and stop.

@@ -47,7 +47,7 @@ Port-forward the readonly MCP service:
 kubectl -n hermes-sre port-forward svc/mcp-server-kubernetes 3001:3001
 ```
 
-In another terminal, export the same MCP API key:
+In another terminal, export the same MCP auth token:
 
 ```bash
 export MCP_AUTH_TOKEN="<same-token-used-for-helm-install>"
@@ -75,7 +75,7 @@ env_http_headers = { "X-MCP-AUTH" = "MCP_AUTH_TOKEN" }
 headers = { "Host" = "mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001" }
 ```
 
-## Claude Setup
+## MCP Client Setup
 
 Keep the port-forward running:
 
@@ -83,44 +83,22 @@ Keep the port-forward running:
 kubectl -n hermes-sre port-forward svc/mcp-server-kubernetes 3001:3001
 ```
 
-Export the auth token before starting Claude:
+Export the auth token before starting your MCP client:
 
 ```bash
 export MCP_AUTH_TOKEN="<same-token-used-for-helm-install>"
 ```
 
-Add the readonly Kubernetes MCP server to Claude Code:
+Configure the client with the local HTTP endpoint and both required headers:
 
-```bash
-claude mcp add \
-  --transport http \
-  --scope user \
-  kubernetes-readonly \
-  http://localhost:3001/mcp \
-  --header "X-MCP-AUTH: ${MCP_AUTH_TOKEN}" \
-  --header "Host: mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001"
+```toml
+[mcp_servers.kubernetes-readonly]
+transport = "streamable-http"
+url = "http://localhost:3001/mcp"
+env_http_headers = { "X-MCP-AUTH" = "MCP_AUTH_TOKEN" }
+headers = { "Host" = "mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001" }
 ```
 
-Verify it is registered:
+After connecting, verify that `kubernetes-readonly` exposes readonly tools such as `kubectl_get`, `kubectl_describe`, `kubectl_logs`, and `list_api_resources`.
 
-```bash
-claude mcp list
-claude mcp get kubernetes-readonly
-```
-
-Inside Claude Code, run:
-
-```text
-/mcp
-```
-
-Then check that `kubernetes-readonly` is connected and exposes readonly tools such as `kubectl_get`, `kubectl_describe`, `kubectl_logs`, and `list_api_resources`.
-
-Alternative JSON setup for Claude Code:
-
-```bash
-claude mcp add-json kubernetes-readonly \
-  '{"type":"http","url":"http://localhost:3001/mcp","headers":{"X-MCP-AUTH":"'"${MCP_AUTH_TOKEN}"'","Host":"mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001"}}'
-```
-
-Claude Desktop note: if `claude_desktop_config.json` does not accept HTTP MCP URLs directly, use Claude Code for this local port-forward setup or configure a stdio bridge such as `mcp-remote` that forwards to `http://localhost:3001/mcp` with the `X-MCP-AUTH` and `Host` headers.
+If your client does not accept HTTP MCP URLs directly, configure an HTTP-capable bridge that forwards to `http://localhost:3001/mcp` with the `X-MCP-AUTH` and `Host` headers.

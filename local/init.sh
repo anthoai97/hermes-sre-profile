@@ -11,11 +11,6 @@ docker run --rm \
     hermes-agent:latest \
     hermes profile install /profile --alias --yes
 
-# docker run --rm \
-#     -v ./hermes_data:/opt/data \
-#     hermes-agent:latest \
-#     --profile sre-agent setup
-
 docker run --rm \
     --env-file .env \
     -e KUBERNETES_MCP_URL="$KUBERNETES_MCP_URL" \

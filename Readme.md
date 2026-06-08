@@ -41,26 +41,12 @@ cd hermes-sre-profile
 hermes profile install ./profile --alias
 ```
 
-Configure model access in the installed profile `.env`:
+Configure runtime access in the installed profile `.env`:
 
 ```sh
-OPENROUTER_API_KEY=
 MCP_AUTH_TOKEN=
 KUBERNETES_MCP_URL=http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
-
-Provider order:
-
-- Primary: OpenRouter
-- Fallback: OpenAI Codex OAuth
-
-For Codex OAuth, run:
-
-```sh
-hermes model
-```
-
-Then choose OpenAI Codex and complete the OAuth flow.
 
 ## Kubernetes MCP Scope
 

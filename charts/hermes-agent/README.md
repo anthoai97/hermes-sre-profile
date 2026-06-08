@@ -89,13 +89,13 @@ kubectl port-forward svc/hermes-hermes-agent 9119:9119
 
 Open `http://127.0.0.1:9119`.
 
-## Configure API keys
+## Configure runtime environment
 
 The chart supports Hermes' profile-based deployment model:
 
 - the profile is installed into `HERMES_HOME`, defaulting to `/opt/data`
 - the profile directory is the source of truth for `config.yaml`, `SOUL.md`, and `skills/`
-- runtime environment variables for provider keys and tokens
+- runtime environment variables for tokens and profile-specific secrets
 - the chart can optionally write an extra `config.yaml` override, but this is disabled by default
 
 By default, the chart does not vendor profile files into the Helm chart. The init container pulls the profile from:
@@ -110,10 +110,6 @@ If you need a chart-local config override, enable `config.enabled`. Prefer chang
 config:
   enabled: true
   data:
-    model:
-      provider: openai
-      default: gpt-4o
-      api_mode: chat_completions
     agent:
       max_turns: 90
 ```
@@ -123,18 +119,15 @@ To override the full file as raw YAML:
 ```yaml
 config:
   raw: |-
-    model:
-      provider: openai
-      default: gpt-4o
+    agent:
+      max_turns: 90
 ```
 
-For provider keys, inject runtime environment variables from your own deployment pipeline. The chart does not render, mount, or reference Kubernetes Secret resources:
+Inject runtime environment variables from your own deployment pipeline. The chart does not render, mount, or reference Kubernetes Secret resources:
 
 ```yaml
 env:
-  - name: OPENAI_API_KEY
-    value: ""
-  - name: ANTHROPIC_API_KEY
+  - name: EXAMPLE_RUNTIME_TOKEN
     value: ""
 ```
 
@@ -162,33 +155,9 @@ Hermes does not need direct Kubernetes API permissions when using MCP-only mode.
 
 The Hermes pod still uses a Kubernetes ServiceAccount for identity, but that ServiceAccount has no chart-created Kubernetes API permissions. Kubernetes API permissions belong to the separately installed readonly MCP server.
 
-## Runtime environment examples
+## Runtime environment
 
-OpenRouter:
-
-```yaml
-env:
-  - name: OPENROUTER_API_KEY
-    value: ""
-```
-
-OpenAI:
-
-```yaml
-env:
-  - name: OPENAI_API_KEY
-    value: ""
-```
-
-Anthropic:
-
-```yaml
-env:
-  - name: ANTHROPIC_API_KEY
-    value: ""
-```
-
-Model/provider routing belongs in the installed profile. The chart should only inject runtime environment needed by that profile.
+Profile runtime settings belong in the installed profile. The chart should only inject runtime environment needed by that profile.
 
 The chart intentionally has no `envFile`, `createSecret`, or Secret reference example. Avoid putting real credentials in values files.
 

@@ -1,12 +1,9 @@
 model:
-  provider: openrouter
-  default: openai/gpt-oss-120b:free
-  base_url: ""
-  api_mode: chat_completions
-
-fallback_providers:
-  - provider: openai-codex
-    model: gpt-5-codex
+  default: gpt-5.5
+  provider: openai-codex
+  base_url: https://chatgpt.com/backend-api/codex
+providers: {}
+fallback_providers: []
 
 toolsets:
   - skills

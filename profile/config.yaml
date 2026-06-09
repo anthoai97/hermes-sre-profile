@@ -131,6 +131,8 @@ gateway:
 
 slack:
   require_mention: true
+  strict_mention: true
+  unauthorized_dm_behavior: "ignore"
   allowed_channels: ""
 
 tool_loop_guardrails:

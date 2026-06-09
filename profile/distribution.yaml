@@ -14,6 +14,18 @@ env_requires:
   - name: TELEGRAM_ALLOWED_USERS
     description: "Comma-separated Telegram user IDs allowed to access the gateway"
     required: false
+  - name: SLACK_BOT_TOKEN
+    description: "Slack bot token for gateway access"
+    required: false
+  - name: SLACK_APP_TOKEN
+    description: "Slack app-level token for Socket Mode"
+    required: false
+  - name: SLACK_ALLOWED_USERS
+    description: "Comma-separated Slack member IDs allowed to access the gateway"
+    required: false
+  - name: SLACK_ALLOWED_CHANNELS
+    description: "Comma-separated Slack channel IDs where the bot may respond"
+    required: false
   - name: MCP_AUTH_TOKEN
     description: "Auth token for the readonly Kubernetes MCP server"
     required: true

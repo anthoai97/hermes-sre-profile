@@ -51,6 +51,65 @@ MCP_AUTH_TOKEN=
 KUBERNETES_MCP_URL=http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
 ```
 
+## Slack Team Onboarding
+
+This profile supports team Slack usage through the Hermes messaging gateway. The Slack profile is configured for explicit mention usage:
+
+```yaml
+slack:
+  require_mention: true
+  strict_mention: true
+```
+
+In channels, users must mention the bot before it responds:
+
+```text
+@Hermes Agent is custody-service running in dev?
+@Hermes Agent /kubernetes_service_check Is custody-service running in dev?
+```
+
+Follow the official Hermes Slack setup guide for the current Slack app manifest, scopes, Socket Mode setup, and troubleshooting:
+
+```text
+https://hermes-agent.nousresearch.com/docs/user-guide/messaging/slack
+```
+
+Recommended setup:
+
+1. Generate the Slack app manifest:
+
+   ```sh
+   hermes slack manifest --write
+   ```
+
+2. In Slack, create a new app from the generated manifest at `https://api.slack.com/apps`.
+3. Enable Socket Mode, install the app to the workspace, and copy:
+
+   ```sh
+   SLACK_BOT_TOKEN=xoxb-...
+   SLACK_APP_TOKEN=xapp-...
+   ```
+
+4. Find authorized teammate Slack member IDs and set:
+
+   ```sh
+   SLACK_ALLOWED_USERS=U01ABC2DEF3,U04XYZ9ABC
+   ```
+
+5. Optionally restrict the bot to approved channels:
+
+   ```sh
+   SLACK_ALLOWED_CHANNELS=C0123456789,C0987654321
+   ```
+
+6. Invite the bot to each allowed channel:
+
+   ```text
+   /invite @Hermes Agent
+   ```
+
+Never commit Slack tokens. Store them in local `.env` files or inject them through runtime secrets.
+
 ## Kubernetes MCP Scope
 
 The agent expects the readonly Kubernetes MCP server to be available in the `hermes-sre` namespace:

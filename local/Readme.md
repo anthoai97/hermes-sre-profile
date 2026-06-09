@@ -14,9 +14,36 @@ Edit `local/.env` and fill only the secrets you need:
 OPENROUTER_API_KEY=
 TELEGRAM_BOT_TOKEN=
 TELEGRAM_ALLOWED_USERS=
+SLACK_BOT_TOKEN=
+SLACK_APP_TOKEN=
+SLACK_ALLOWED_USERS=
+SLACK_ALLOWED_CHANNELS=
 MCP_AUTH_TOKEN=
 KUBERNETES_MCP_URL=http://host.docker.internal:3001/mcp
 ```
+
+## Local Slack Gateway
+
+For Slack team usage, follow the official Hermes Slack guide:
+
+```text
+https://hermes-agent.nousresearch.com/docs/user-guide/messaging/slack
+```
+
+Generate the Slack app manifest, create the app in Slack, enable Socket Mode, then put the copied tokens and allowlists in `local/.env`:
+
+```sh
+hermes slack manifest --write
+```
+
+```sh
+SLACK_BOT_TOKEN=xoxb-...
+SLACK_APP_TOKEN=xapp-...
+SLACK_ALLOWED_USERS=U01ABC2DEF3,U04XYZ9ABC
+SLACK_ALLOWED_CHANNELS=C0123456789,C0987654321
+```
+
+The profile requires explicit Slack mentions in channels. Invite the bot to each channel with `/invite @Hermes Agent`, then ask questions by mentioning it.
 
 For local Docker, keep the readonly Kubernetes MCP port-forward running on the host:
 

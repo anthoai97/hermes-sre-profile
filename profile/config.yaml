@@ -68,11 +68,14 @@ compression:
   threshold: 0.50
 
 display:
-  tool_progress: verbose
+  tool_progress: all
+  tool_progress_command: false
   platforms:
+    slack:
+      tool_progress: "off"
     telegram:
       tool_progress: verbose
-      busy_ack_detail: true
+  interim_assistant_messages: true
 
 session_reset:
   mode: idle
@@ -105,6 +108,30 @@ telegram:
 gateway:
   platforms:
     telegram:
+      extra:
+        allow_admin_from:
+          - "__no_admins__"
+        user_allowed_commands:
+          - start
+          - new
+          - reset
+          - sethome
+          - set_home
+          - usage
+          - security_verify
+          - kubernetes_service_check
+        group_allow_admin_from:
+          - "__no_group_admins__"
+        group_user_allowed_commands:
+          - start
+          - new
+          - reset
+          - sethome
+          - set_home
+          - usage
+          - security_verify
+          - kubernetes_service_check
+    slack:
       extra:
         allow_admin_from:
           - "__no_admins__"

@@ -26,6 +26,9 @@ env_requires:
   - name: SLACK_ALLOWED_CHANNELS
     description: "Comma-separated Slack channel IDs where the bot may respond"
     required: false
+  - name: SLACK_HOME_CHANNEL
+    description: "Slack channel ID for proactive gateway and scheduled delivery messages"
+    required: false
   - name: MCP_AUTH_TOKEN
     description: "Auth token for the readonly Kubernetes MCP server"
     required: true

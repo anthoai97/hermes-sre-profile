@@ -152,9 +152,10 @@ SLACK_BOT_TOKEN=xoxb-...
 SLACK_APP_TOKEN=xapp-...
 SLACK_ALLOWED_USERS=U01ABC2DEF3,U04XYZ9ABC
 SLACK_ALLOWED_CHANNELS=C0123456789,C0987654321
+SLACK_HOME_CHANNEL=C0123456789
 ```
 
-The installed profile requires explicit `@Hermes Agent` mentions in Slack channels.
+The installed profile requires explicit `@Hermes Agent` mentions in Slack channels. Invite the bot to each allowed and home channel.
 
 Install with:
 

@@ -102,7 +102,13 @@ Recommended setup:
    SLACK_ALLOWED_CHANNELS=C0123456789,C0987654321
    ```
 
-6. Invite the bot to each allowed channel:
+6. Optionally set the home channel for proactive gateway and scheduled delivery messages:
+
+   ```sh
+   SLACK_HOME_CHANNEL=C0123456789
+   ```
+
+7. Invite the bot to each allowed and home channel:
 
    ```text
    /invite @Hermes Agent

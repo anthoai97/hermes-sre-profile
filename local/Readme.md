@@ -18,6 +18,7 @@ SLACK_BOT_TOKEN=
 SLACK_APP_TOKEN=
 SLACK_ALLOWED_USERS=
 SLACK_ALLOWED_CHANNELS=
+SLACK_HOME_CHANNEL=
 MCP_AUTH_TOKEN=
 KUBERNETES_MCP_URL=http://host.docker.internal:3001/mcp
 ```
@@ -41,9 +42,10 @@ SLACK_BOT_TOKEN=xoxb-...
 SLACK_APP_TOKEN=xapp-...
 SLACK_ALLOWED_USERS=U01ABC2DEF3,U04XYZ9ABC
 SLACK_ALLOWED_CHANNELS=C0123456789,C0987654321
+SLACK_HOME_CHANNEL=C0123456789
 ```
 
-The profile requires explicit Slack mentions in channels. Invite the bot to each channel with `/invite @Hermes Agent`, then ask questions by mentioning it.
+The profile requires explicit Slack mentions in channels. Invite the bot to each allowed and home channel with `/invite @Hermes Agent`, then ask questions by mentioning it.
 
 For local Docker, keep the readonly Kubernetes MCP port-forward running on the host:
 

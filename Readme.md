@@ -1,17 +1,19 @@
 # Hermes SRE Profile
 
-Read-only Hermes Agent profile and deployment chart for SRE/DevOps support.
+Read-only Hermes Agent profile for SRE/DevOps support on Kubernetes.
 
-The profile is designed to answer simple developer questions about Kubernetes service health, rollout state, pod state, endpoints, and recent non-sensitive events while reducing manual SRE information gathering.
+It answers developer questions about service health, rollout state, pods, endpoints, logs, and recent non-sensitive events using a readonly Kubernetes MCP server.
+
+![Hermes Slack service check example](docs/slack_example.png)
 
 ## What It Does
 
-- Answers service status questions from live Kubernetes evidence.
-- Provides a `/kubernetes_service_check` skill for simple readonly service checks.
-- Uses the readonly Kubernetes MCP server for Kubernetes inspection.
-- Refuses edit, delete, modify, restart, scale, patch, apply, rollback, exec, attach, copy, and port-forward actions.
-- Does not inspect Kubernetes Secrets or ConfigMaps.
-- Keeps memory disabled so new sessions do not reuse stale operational state.
+- Answers Kubernetes status questions from live readonly evidence.
+- Provides `/kubernetes_service_check` for simple service checks.
+- Provides `/security_verify` to verify the readonly MCP tool surface.
+- Supports Slack and Telegram gateway usage.
+- Keeps memory disabled so sessions do not reuse stale operational state.
+- Refuses mutating or interactive actions.
 
 Example questions:
 
@@ -19,23 +21,21 @@ Example questions:
 How many services are running in staging?
 Is custody-service running in dev?
 What happened with payment-api after my deployment?
-I deployed service A, but nothing changed. What should I check?
 /kubernetes_service_check Is custody-service running in dev?
 /security_verify
 ```
 
-## Contents
+## Repository Layout
 
 ```text
 profile/                   Hermes SRE profile distribution
 charts/hermes-agent/       Helm chart for running Hermes in Kubernetes
-local/                     Local Docker Compose development setup
-mcp/                       MCP install setup; see `mcp/kubernetes-readonly/`
+local/                     Local Docker Compose setup
+mcp/                       Readonly Kubernetes MCP setup
+docs/                      Images and supporting docs assets
 ```
 
 ## Profile Install
-
-From this repository:
 
 ```sh
 git clone https://github.com/anthoai97/hermes-sre-profile.git
@@ -43,95 +43,54 @@ cd hermes-sre-profile
 hermes profile install ./profile --alias
 ```
 
-Configure runtime access in the installed profile `.env`:
+Set runtime secrets in the installed profile `.env`:
 
 ```sh
 OPENROUTER_API_KEY=
 MCP_AUTH_TOKEN=
-KUBERNETES_MCP_URL=http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
+KUBERNETES_MCP_URL=
 ```
 
-## Slack Team Onboarding
+Keep secrets out of git.
 
-This profile supports team Slack usage through the Hermes messaging gateway. The Slack profile is configured to require a mention for new channel conversations while allowing follow-up replies in the same thread:
+## Slack Usage
 
-```yaml
-slack:
-  require_mention: true
-  strict_mention: false
-```
-
-In channels, users must mention the bot to start a conversation:
+Start a channel conversation by mentioning the bot:
 
 ```text
 @Hermes Agent is custody-service running in dev?
-@Hermes Agent /kubernetes_service_check Is custody-service running in dev?
 ```
 
-After Hermes replies in a thread, follow-up replies in that thread can continue without mentioning the bot again.
+After Hermes replies in a thread, follow-up replies in that thread can continue without another mention.
 
-Follow the official Hermes Slack setup guide for the current Slack app manifest, scopes, Socket Mode setup, and troubleshooting:
+Slack setup reference:
 
 ```text
 https://hermes-agent.nousresearch.com/docs/user-guide/messaging/slack
 ```
 
-## Kubernetes MCP Scope
+## Kubernetes MCP
 
-The agent expects the readonly Kubernetes MCP server to be available in the `hermes-sre` namespace:
-
-```text
-http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
-```
-
-Local Docker Compose can instead point `KUBERNETES_MCP_URL` at a host-side port-forward such as `http://host.docker.internal:3001/mcp`. The profile still sends the in-cluster Service name as the MCP `Host` header for DNS rebinding protection.
-
-The profile enables only the generated Hermes MCP toolset `mcp-kubernetes-readonly` plus `skills`.
-
-Do not grant:
-
-- `secrets`
-- `configmaps`
-- `pods/exec`
-- `pods/attach`
-- `pods/portforward`
-- mutating verbs such as `create`, `update`, `patch`, or `delete`
-
-## Helm Chart
-
-Install the readonly Kubernetes MCP server first:
+Install the readonly Kubernetes MCP server before running Hermes.
 
 ```sh
 export MCP_AUTH_TOKEN="<choose-a-long-random-token>"
 ./mcp/install-kubernetes-readonly.sh
 ```
 
-Install:
+The MCP server owns Kubernetes API access. Keep it readonly and do not grant secret, ConfigMap, exec, port-forward, or mutating permissions.
+
+See [mcp/kubernetes-readonly/README.md](mcp/kubernetes-readonly/README.md) for MCP details.
+
+## Helm Install
+
+After MCP is installed, deploy Hermes:
 
 ```sh
-helm upgrade --install hermes ./charts/hermes-agent \
-  -n hermes-sre \
-  --create-namespace \
-  --set-string "global.mcpAuthToken=${MCP_AUTH_TOKEN}" \
-  -f values.local.yaml
+helm upgrade --install hermes ./charts/hermes-agent -n hermes-sre --create-namespace -f values.local.yaml
 ```
 
-The chart deploys Hermes in Kubernetes, installs this profile from GitHub during pod bootstrap, and then runs Hermes with the installed profile:
-
-```text
-git clone --depth 1 https://github.com/anthoai97/hermes-sre-profile.git hermes-sre-profile
-hermes profile install hermes-sre-profile/profile --alias --yes
-hermes --profile sre-agent gateway run
-```
-
-It does not install `kubectl`, does not deploy the MCP server, and does not create Kubernetes RBAC for the Hermes agent pod. The separately installed readonly MCP server owns Kubernetes RBAC. Provide the same MCP auth token to Hermes through `global.mcpAuthToken`:
-
-```yaml
-global:
-  mcpAuthToken: "<choose-a-long-random-token>"
-```
-
-The profile directory remains the source of truth for `profile/config.yaml`, `profile/SOUL.md`, and `profile/skills/`. The chart should not vendor or duplicate profile files.
+The chart installs this profile during pod bootstrap. It does not deploy the MCP server or create Kubernetes RBAC for Hermes.
 
 See [charts/hermes-agent/README.md](charts/hermes-agent/README.md) for chart details.
 
@@ -139,10 +98,8 @@ See [charts/hermes-agent/README.md](charts/hermes-agent/README.md) for chart det
 
 - No Kubernetes Secret access.
 - No ConfigMap access.
-- No pod exec/attach/port-forward access.
-- No file, browser, web, terminal, or code execution toolsets in the Hermes profile.
+- No pod exec, attach, copy, or port-forward.
+- No file, browser, web, terminal, or code execution toolsets in the profile.
 - No persistent memory for cross-session operational facts.
-- `/kubernetes_service_check` is a dedicated skill slash command for simple readonly service checks.
-- `/security_verify` is a dedicated skill slash command that verifies the MCP tool surface is readonly and performs a harmless readonly positive-control check.
 
-See [SOUL.md](profile/SOUL.md) for the full agent behavior policy.
+See [profile/SOUL.md](profile/SOUL.md) for the agent behavior policy.

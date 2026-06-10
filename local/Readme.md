@@ -45,7 +45,7 @@ SLACK_ALLOWED_CHANNELS=C0123456789,C0987654321
 SLACK_HOME_CHANNEL=C0123456789
 ```
 
-The profile requires explicit Slack mentions in channels. Invite the bot to each allowed and home channel with `/invite @Hermes Agent`, then ask questions by mentioning it.
+The profile requires Slack mentions to start channel conversations, then allows follow-up replies in the same thread. Invite the bot to each allowed and home channel with `/invite @Hermes Agent`, then ask questions by mentioning it.
 
 For local Docker, keep the readonly Kubernetes MCP port-forward running on the host:
 

@@ -155,7 +155,7 @@ SLACK_ALLOWED_CHANNELS=C0123456789,C0987654321
 SLACK_HOME_CHANNEL=C0123456789
 ```
 
-The installed profile requires explicit `@Hermes Agent` mentions in Slack channels. Invite the bot to each allowed and home channel.
+The installed profile requires `@Hermes Agent` mentions to start Slack channel conversations, then allows follow-up replies in the same thread. Invite the bot to each allowed and home channel.
 
 Install with:
 

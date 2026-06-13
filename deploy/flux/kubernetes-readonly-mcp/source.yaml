@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: mcp-server-kubernetes
+  namespace: hermes-sre
+spec:
+  interval: 1m
+  url: https://github.com/anthoai97/mcp-server-kubernetes.git
+  ref:
+    branch: main

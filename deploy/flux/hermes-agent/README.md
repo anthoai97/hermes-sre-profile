@@ -2,12 +2,12 @@
 
 This directory contains a FluxCD example for installing the existing Hermes Agent Helm chart.
 
-The readonly Kubernetes MCP server is still installed separately. Install and verify MCP first, then let Flux reconcile Hermes.
+The readonly Kubernetes MCP server is a separate FluxCD HelmRelease under `deploy/flux/kubernetes-readonly-mcp`. Install both with `kubectl apply -k deploy/flux`, or install and verify MCP first before reconciling this directory alone.
 
 ## Prerequisites
 
 - Flux is bootstrapped in the target cluster with source, kustomize, and helm controllers.
-- The readonly Kubernetes MCP server is installed in the `hermes-sre` namespace.
+- The readonly Kubernetes MCP server is installed in the `hermes-sre` namespace, preferably from `deploy/flux/kubernetes-readonly-mcp`.
 - The MCP service is reachable at:
 
 ```text
@@ -39,7 +39,13 @@ Do not commit real secret manifests. Use SOPS, External Secrets, Sealed Secrets,
 
 ## Reconcile
 
-Apply this example directly:
+Apply the full Flux stack:
+
+```sh
+kubectl apply -k deploy/flux
+```
+
+Or apply this Hermes-only example when MCP and the `hermes-sre` namespace are already managed separately:
 
 ```sh
 kubectl apply -k deploy/flux/hermes-agent
@@ -50,6 +56,7 @@ Or copy this directory into the path reconciled by your Flux root `Kustomization
 Force reconciliation when needed:
 
 ```sh
+flux reconcile helmrelease mcp-server-kubernetes -n hermes-sre
 flux reconcile source git hermes-sre-profile -n hermes-sre
 flux reconcile helmrelease hermes -n hermes-sre
 ```

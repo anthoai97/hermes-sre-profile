@@ -12,7 +12,7 @@ Track what is done, what to do next, and what can wait.
 - [x] Slack support for team member usage by @agent
 
 ## Next
-
+- [ ] Hermes Agent running on Kubernetes
 - [ ] Feature request skill: when a developer or user asks for an update, remember it and write it down to retrieve later.
 - [ ] ConfigMap retrieval support.
 - [ ] Multi-MCP server setup for Prod and NonProd environments.

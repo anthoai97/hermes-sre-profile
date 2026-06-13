@@ -1,0 +1,35 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: hermes
+  namespace: hermes-sre
+spec:
+  interval: 5m
+  releaseName: hermes
+  targetNamespace: hermes-sre
+  chart:
+    spec:
+      chart: ./charts/hermes-agent
+      sourceRef:
+        kind: GitRepository
+        name: hermes-sre-profile
+        namespace: hermes-sre
+      interval: 1m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    env:
+      - name: KUBERNETES_MCP_URL
+        value: http://mcp-server-kubernetes.hermes-sre.svc.cluster.local:3001/mcp
+    envFrom:
+      - secretRef:
+          name: hermes-runtime-env
+  valuesFrom:
+    - kind: Secret
+      name: hermes-mcp-auth
+      valuesKey: mcpAuthToken
+      targetPath: global.mcpAuthToken

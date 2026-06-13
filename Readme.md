@@ -92,6 +92,8 @@ helm upgrade --install hermes ./charts/hermes-agent -n hermes-sre --create-names
 
 The chart installs this profile during pod bootstrap. It does not deploy the MCP server or create Kubernetes RBAC for Hermes.
 
+For the full production-style install order, secret injection pattern, rollout checks, and dashboard access steps, see [docs/kubernetes-install.md](docs/kubernetes-install.md).
+
 See [charts/hermes-agent/README.md](charts/hermes-agent/README.md) for chart details.
 
 ## Security Defaults

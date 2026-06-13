@@ -13,6 +13,12 @@ The fork chart clone is local development scratch space at `mcp/.worktrees/mcp-s
 
 Install or upgrade the MCP server in the `hermes-sre` namespace with the readonly values file. The profile uses this namespace in its internal service URL.
 
+Validate the installer and readonly values before changing them:
+
+```bash
+./scripts/validate-kubernetes-mcp-install.sh
+```
+
 ```bash
 export MCP_AUTH_TOKEN="<choose-a-long-random-token>"
 

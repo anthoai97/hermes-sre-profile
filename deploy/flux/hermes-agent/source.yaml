@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: hermes-sre-profile
+  namespace: hermes-sre
+spec:
+  interval: 1m
+  url: https://github.com/anthoai97/hermes-sre-profile.git
+  ref:
+    branch: main

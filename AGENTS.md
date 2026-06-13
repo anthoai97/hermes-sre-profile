@@ -12,6 +12,7 @@ Guidance for AI coding agents working in this repository.
 - Break larger work into phases. Run agents sequentially (one phase at a time) and commit after each phase, so progress stays clear and reviewable.
 - Spawn agents to manage your context better, but run them one at a time rather than in parallel.
 - Do not add `Co-Authored-By` or any AI attribution to commit messages.
+- When opening a PR for review, create it as a draft by default and include a `Related issues` section linking the parent PRD and implemented issues.
 
 ## Agent skills
 

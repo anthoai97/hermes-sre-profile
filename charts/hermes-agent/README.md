@@ -24,6 +24,18 @@ resources:
 helm install hermes ./charts/hermes-agent
 ```
 
+## Validate
+
+Before changing the chart, run:
+
+```sh
+./scripts/validate-hermes-chart.sh
+```
+
+The validation lints and renders the chart, then checks the expected Kubernetes
+resources, profile bootstrap flow, Hermes runtime arguments, MCP environment
+wiring, dashboard port, and absence of chart-created Kubernetes RBAC resources.
+
 By default, the chart installs the Hermes SRE profile from GitHub during pod bootstrap, then runs the gateway with that profile:
 
 ```yaml
